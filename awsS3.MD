@@ -83,7 +83,7 @@ resource "aws_s3_bucket_public_access_block" "s3-public-block" {
             }]}
     )
     }
-    
+
     ```
 
 ## Get a bucket configured to host website
@@ -98,3 +98,8 @@ resource "aws_s3_bucket_website_configuration" "my-static-website" {
   }
 }
 ```
+## A Static website is hosted on S3 using terraform
+
+<img width="623" alt="s3-static-web01" src="https://github.com/user-attachments/assets/b2b7504f-e660-45ce-862f-34b1094a1b36">
+
+<img width="948" alt="s3-static-web02" src="https://github.com/user-attachments/assets/b0b3c14c-6a20-4e52-a19c-2f18360ab010">

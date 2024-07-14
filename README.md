@@ -21,8 +21,6 @@ instance_type = “t2_micro”}
 
 ```
 
-
-
 ## Create resources on AWS: 
     Create a VPC, 
     Create an Internet Gateway
@@ -166,6 +164,12 @@ Once the scripts are written using `.tf` file.
     - this creates the resources on the given provider
     - `terraform apply`
     - or `terraform apply ec2plan.tfplan`
+
+## How to maintain the state 
+- When we run `terraform apply` it creates a state file `.tfstate` which records the current state 
+**Important** 🆘 
+- This `state` file is very crucial and so, we have to store that safely on local or on remote
+
 4. This creates an Ec2 resource on AWS, but on the terminal, it does not provide the Public IP of the instance.
 <img width="841" alt="TF-01" src="https://github.com/partho-dev/terraform/assets/150241170/2206d2ea-c65b-4586-9aa6-a072bfc77b83">
 
@@ -183,3 +187,20 @@ Once the scripts are written using `.tf` file.
 - It uses data types like `strings` `Number, Booleans`and other complex data types `List, set, map` etc
 - It also loops the data 
 - So, it needed that principle and hence it needed its own `HCL` language
+
+## Is there a way, to check if the .tf file is correctly written
+- `terraform validate`
+- Try by typing some resource name incorrect like `instance_types = "t2.micro"` with an extra `s`
+- This will warn with `validate`
+
+## Few important points to note
+1. `depends` is used when one resource creation should happen once the previous dependable resource is created
+2. `count=4` is used to create 4 resources at a time
+4. `terraform destroy -target` is used to delete only one target resource rather destroying the entire infra
+5. `import` is used to create IaC from an existing infra created manually
+6. `terraform validate` is used to validate if any error on the syntax
+7. **Test**
+    - `terraform-compliance` is used for unit testing the Terraform script
+    - `Terratest` - integration test
+    - `tfsec` - Static analysis
+8. 

@@ -203,4 +203,7 @@ Once the scripts are written using `.tf` file.
     - `terraform-compliance` is used for unit testing the Terraform script
     - `Terratest` - integration test
     - `tfsec` - Static analysis
-8. 
+8. `output` - output & `value` = Used to get some output of certain value
+```
+
+```

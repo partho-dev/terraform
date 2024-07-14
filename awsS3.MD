@@ -66,6 +66,7 @@ resource "aws_s3_bucket_public_access_block" "s3-public-block" {
   ## Apply policy on bucket
   - Just remove the `""` `:` from the key and add `=`
   - Get the policy from aws documentation
+
   ```
   resource "aws_s3_bucket_policy" "s3-policy" {
     bucket = aws_s3_bucket.s3-bucket.bucket
@@ -81,7 +82,8 @@ resource "aws_s3_bucket_public_access_block" "s3-public-block" {
                 Resource = "arn:aws:s3:::${aws_s3_bucket.s3-bucket.bucket}/*"
             }]}
     )
-}
+    }
+    
     ```
 
 ## Get a bucket configured to host website

@@ -1,4 +1,12 @@
 
+## Common resources used for AWS S3
+1. `aws_s3_bucket` - To create a bucket
+2. `aws_s3_bucket_public_access_block` - Enable or Disable the public access to Bucket
+3. `aws_s3_object` - To put object on bucket
+4. `ws_s3_bucket_policy` - To enable JSON encoded policy on a bucket
+5. `aws_s3_bucket_website_configuration` - To configure a bucket to host static website
+6.  
+
 ## Random Provider
 - for bucket unique name, we would need a random provider
 

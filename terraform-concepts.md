@@ -44,7 +44,7 @@ default = {
 }
 ```
 
-## What are the data types in Terraform
+## What are the data types in Terraform 
 - Terraform deals with different types of data as an input to create infra
 - ami 
 - name of instance
@@ -62,10 +62,28 @@ variable "instance_type" {
 }
 ```
 * `number`
+```
+variable "instance_count" {
+  type    = number
+  default = 1
+}
+```
 * `bool`
+```
+variable "enable_monitoring" {
+  type    = bool
+  default = true
+}
+```
 
 ### Collection data types
 * `list(string)`
+```
+variable "availability_zones" {
+  type    = list(string)
+  default = ["us-west-1a", "us-west-1b"]
+}
+```
 * `map(string)`
 ```
 variable "tags" {
@@ -77,6 +95,12 @@ variable "tags" {
 }
 ```
 * `set(string)`
+```
+variable "allowed_ips" {
+  type    = set(string)
+  default = ["192.168.1.1", "192.168.1.2"]
+}
+```
 
 ### Complex data types
 * `object({})`
@@ -96,3 +120,37 @@ variable "person" {
 
 ### Dynamic Types
 * `any`
+
+
+## What are the different string data types default methods for Terraform 👨‍💻
+* String methods
+1. `format()`
+format("Hello %s!", "world") 
+"Hello world!"
+- Here, `%s` represents a placeholder for another string
+- similarly `%d` for `integers` & `%f` for `floating numbers`
+
+2. `formatlist()`
+formatlist("Hello, %s", ["partho", "john"])
+["Hello, partho", "Hello, john"]
+
+3. `join()`
+join(", ", [1,2,3])
+"1, 2, 3"
+
+4. `split()`
+split(", ", "a", "b", "c")
+["a", "b", "c"]
+
+5. `lower()` - converts the string to lower case
+6. `upper()` - converts the string to upper case
+7. `replace()` 
+8. `trimspace()`
+9. `trimprefix()`
+10. `trimsuffix()`
+11. `substr()`
+12. `indent()`
+13. `regex()`
+14. `length()` 
+
+## Manage multiple resources using "count" & "for_each"

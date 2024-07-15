@@ -51,7 +51,7 @@ default = {
 - number of instances etc
 So, to manage these data efficiently, terraform has its own datatypes and inbuilt methods to manupulate the data
 
-![terraform-data-types](https://github.com/user-attachments/assets/7c96086e-2aef-4085-8105-a32dec4afeed)
+![terraform-data-types](https://github.com/user-attachments/assets/5688675e-14ea-4484-a628-11c363914f15)
 
 ### Basic Data types
 * `string` 

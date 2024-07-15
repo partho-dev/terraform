@@ -2,7 +2,15 @@
 - `workspace` is used mainly during the creation/manage of multiple distinct infrastructure configurations within same directory
 - Dev, QA, Staging environment, prod etc can be managed using workspace in tf
 
-## Data types
+## Terraform variables
+
+- A variable is used to prevent repetation of hard coding the properties during resource creation
+- Terraform has two types of variables
+1. Input Variable
+2. Output Variable
+- When we write variable, it deals with different types of data & so, we would need to know more about `Data Types`
+
+## Data types - Data types in Terraform
 ### Terraform List
 For `JS` *Array* is kind of equivalent to `TF` *List*
 

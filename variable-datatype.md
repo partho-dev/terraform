@@ -164,4 +164,165 @@ split(", ", "a", "b", "c")
 13. `regex()`
 14. `length()` 
 
-## Manage multiple resources using "count" & "for_each"
+## Lets understand the use of variables and data types for building infrastructure
+- 👍 Lets consider this resource block in our `main.tf` file
+
+```
+## main.tf
+
+resource "aws_instance" "server" {
+    ami = "ami-0ad21ae1d0696ad58"
+    instance_type = "t2.micro"
+
+    root_block_device {
+      delete_on_termination = true
+      volume_size = 30
+      volume_type = "gp2"
+    }
+
+    tags = {
+      name = "tf-server"
+    }
+}
+```
+- Here, we are using many static value for the infrastructure deployment
+- This setup is fine for a single infrastructure, but its not recommended to hardcode the value on the code.
+- We might use the same resource properties in many places, ex: `instance_type` and in the future if we happen to change the value from `t2.micro` to `t2.medium`, we would need to manually change the value on each place where its used.
+- Instead of that, if we can maintain that as a variable and change the value of the variable, we would not need to manually update the value on all the places.
+- This removed the human error and it saves the time.
+- Lets make a seperate file and use the terraform `variable` for that 
+- It has a syntax as variable `variable_name {//define the variable here}`
+
+```
+## variable.tf
+
+variable "instance_type" {
+  description = "mention the instance type here"
+  default = "t2.micro"
+}
+```
+- Now update the `main.tf` file with this variable
+```
+// main.tf
+
+resource "aws_instance" "server" {
+    ami = "ami-0ad21ae1d0696ad58"
+    instance_type = var.instance_type // updated instance type using variable
+
+    root_block_device {
+      delete_on_termination = true
+      volume_size = 30
+      volume_type = "gp2"
+    }
+
+    tags = {
+      name = "tf-server"
+    }
+}
+```
+<img width="751" alt="tf-var-01" src="https://github.com/user-attachments/assets/e4ef99d5-81dd-4345-92f9-9dc31031f7a9">
+
+- If we dont put any value into the variable file, terraform would promot to input the value during `plan & apply`
+```
+## variable.tf
+variable "instance_type" {
+  description = "mention the instance type here"
+}
+```
+- `Terraform plan`
+<img width="662" alt="tf-var-02" src="https://github.com/user-attachments/assets/8060c837-563d-4098-8258-0ee8f7e5cd0d">
+<img width="537" alt="tf-var-03" src="https://github.com/user-attachments/assets/9c3965ab-57d0-4107-a6ee-d377a96dd827">
+
+- But, this leads to a potential issue of passing any value.
+- To safeguard from this, we can define
+    - the variable type ` string` or `number` or `object, list, etc`
+    - We can provide some validations.
+
+- Lets see them one by one
+- Define the type as `string`
+- provide a `validation` with `condition` and `error` 
+<img width="848" alt="tf-var-04" src="https://github.com/user-attachments/assets/4f4e4a92-984b-49c3-b8b7-31b62effbfbd">
+
+- If we dont want the users to input the value and provide a default value of instance type
+```
+variable.tf
+variable "instance_type" {
+  description = "mention the instance type here"
+  type = string
+  default = "t2.micro"
+}
+```
+
+- The above resource has other hardcoded value as well like `volume_size = 30` & `volume_type = "gp2"` 
+- since both are a part of same block on `root_block_device`, we can make two seperate variables of individual types or 
+- make a single variable of single variable type `object(string)`
+
+### Two seperate variables
+```
+variables.tf
+
+variable "volume_size" {
+    description = "enter the instance volume size"
+    type = number
+    default = "20"
+}
+
+variable "type" {
+    description = "enter the instance volume size"
+    type = string
+    default = "gp2"
+}
+```
+- On `main.tf` file
+```
+resource "aws_instance" "server" {
+    ami = "ami-0ad21ae1d0696ad58"
+    instance_type = var.instance_type
+
+    root_block_device {
+      delete_on_termination = true
+      volume_size = var.volume_size
+      volume_type = var.instance_type
+    }
+
+    tags = {
+      name = "tf-server"
+    }
+}
+```
+- But, we can make these two seperate variables as a single variable 
+- Since there are more than one properties, so we can wrap it inside the type `object`
+`type=object({})`
+
+```
+variable "define-volume" {
+    // object is key=value inside {}
+   type = object({
+     volume_size = number
+     volume_type = string
+   })
+   default = {
+     volume_size = 20
+     volume_type = "gp2"
+   }
+}
+```
+- In the `main.tf`
+```
+resource "aws_instance" "server" {
+    ami = "ami-0ad21ae1d0696ad58"
+    instance_type = var.instance_type
+
+    root_block_device {
+      delete_on_termination = true
+      volume_size = var.define-volume.volume_size // get from the variabl
+      volume_type = var.define-volume.volume_type // get from the variabl
+    }
+
+    tags = {
+      name = "tf-server"
+    }
+}
+```
+<img width="645" alt="tf-var-05" src="https://github.com/user-attachments/assets/ca760545-cdcf-43de-a8c0-36db33c5edb4">
+

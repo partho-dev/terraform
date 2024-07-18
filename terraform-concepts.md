@@ -1,3 +1,76 @@
+## What is the Terraform folder structure
+<img width="539" alt="tf-folder-structure" src="https://github.com/user-attachments/assets/2862ef9d-56bd-4e86-bdd9-158ab9231f23">
+
+## How to access a value from one child module to another
+- Example : the `SG` & `vpc` info would be on `vpc module`
+- But, to create an `ec2` we would need the `VPCID` & the `SG`, but they belong to otherc child module
+- To accomplish that, we would need to know which module is `source` and which is `target`
+- On the source module, Module where the value needs to come from, need to update the values in `output.tf` file
+- On the target module, the module where the value is needed,  we would need to have blank `variables` which are needed
+- Then on the parent `main.tf` we need to call both the child modules, so that these child modules can use their resources
+
+- We need to get the value of `vpc id` & `sg` from - VPC module, so this is our source module.
+- We will get all the value of it into its `output.tf` file
+```
+## output.tf of VPC module, getting the output of its main.tf 
+
+output "vpc-id" {
+  value = aws_vpc.test-tf-vpc.id
+}
+
+output "sg" {
+  value = aws_security_group.securityGroup.id
+}
+
+output "publicSubnet" {
+  value = aws_subnet.public-subnet.id
+}
+```
+- Now, go to the module where the values are needed & create blank variables in `variable.tf` file
+```
+# variables.tf file on Ec2 module 
+
+variable "sg" {
+  
+}
+
+variable "publicSubnet" {
+  
+}
+```
+- now, on Ec2 module, go to its `main.tf` file and use these variables
+```
+# main.tf of Ec2 module (Using the value from VPC module )
+
+
+resource "aws_instance" "web" {
+  ami = "ami-0ec0e125bb6c6e8ec"
+  instance_type = "t2.micro"
+   subnet_id = var.sg // This one we have to get from vpc module
+   security_groups = var.publicSubnet
+   tags = {
+     Name = "Ec2-server"
+   }
+}
+```
+
+- Now, go to parent `main.tf` file and call both the child modules
+```
+# Call both the child modules on parent main.tf file 
+
+module "vpc-module" {
+    source = "./vpc-module"
+  
+}
+
+module "ec2-module" {
+    source = "./Ec2-module"
+    publicSubnet = module.vpc-module.publicSubnet
+    sg = module.vpc-module.sg
+}
+
+```
+
 ## Workspace in TF
 - `workspace` is used mainly during the creation/manage of multiple distinct infrastructure configurations within same directory
 - Dev, QA, Staging environment, prod etc can be managed using workspace in tf
@@ -44,5 +117,40 @@ data "aws_security_group" "name" {
 output "sg" {
     value = data.aws_security_group.name.name
   
+}
+```
+
+## filter in Terraform
+- To filter in terraform, we have to use `for` and `if`
+```
+locals {
+  // double the list of numbers
+  double_num = [ for elem in var.num_list : elem*2 ]
+
+  # Odd number (filter)
+  odd_num = [for num in var.num_list:num if num%2 !=0] // use of (for in if)
+}
+```
+
+## To perform some operation on map
+- If we want to return a new map with some calculations, we have to use this syntax
+- Since, its a new map, so we will use object to map the values within {}
+- key=>value
+- Doubling the value in map
+`double_value = {for key, value in var.instance_type: key=>values*2 }`
+
+## If we have two subnets, but need to create 4 ec2, 2 in each
+- We need to retrieve single element from a list
+- for that we have to use `element()` 
+```
+# Create Ec2 instances
+resource "aws_instance" "name" {
+  ami = local.ami
+  instance_type = "t3.micro"
+  count = 4
+  subnet_id = element(aws_subnet.new-sub[*].id, count.index % 2)
+    tags = {
+    Name = "${local.project}-${count.index+1}"
+  }
 }
 ```

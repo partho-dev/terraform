@@ -326,3 +326,90 @@ resource "aws_instance" "server" {
 ```
 <img width="645" alt="tf-var-05" src="https://github.com/user-attachments/assets/ca760545-cdcf-43de-a8c0-36db33c5edb4">
 
+## Lets understand, how the variables takes the precedence over the other
+- This goes down with more precendence 
+- Moves from top to bottom approach
+    - variable file
+    - environment var ( export TF_VAR_Key=value)
+    - terraform.tfvars
+    - *.auto.tfvars
+    - -var & -var-file (Through command line)
+
+- If the variable applies during `terraform apply` using ` -var` would overwrite all the other variables applied through the other means mentioned above.
+
+### environment var ( export TF_VAR_Key=value) 
+- It takes the precedence over the variable file
+- make sure the variable name remains same on both variables.tf and the environment
+<img width="731" alt="tf-var-06" src="https://github.com/user-attachments/assets/9af9b1b5-6874-4a6a-b908-15cc749c068e">
+<img width="661" alt="tf-var-07" src="https://github.com/user-attachments/assets/092036a8-2686-4b27-b3c4-a787e8a0b176">
+
+### terraform.tfvars
+- It takes the precedence over the environment variable
+- The value that we define on `terraform.tfvars` would overwrite the value passed on `variables.tf & environment`
+- Create a file named `terraform.tfvars` [Thats the standard file name]
+- copy all the variables name 
+```
+# terraform.tfvars
+
+instance_type = "t2.small" ## In the variable file its t2.micro
+define-volume = {
+    volume_size = 30 ##In the variable file, it was 20
+    volume_type = "gp2"
+}
+```
+<img width="577" alt="tf-var-08" src="https://github.com/user-attachments/assets/53e2f40f-5a8f-4ecd-a7b8-ab68219d2d6b">
+
+### *.auto.tfvars
+- Sometimes, we need to keep all the variable value unchanged except certain values, in that case we use this file
+- ex : `test.auto.tfvars`
+- The value we put here takes over the value that is there on the `terraform.tfvars` file
+
+### -var & -var-file (Through command line)
+- The value that we pass through command like with `-var` while we apply the terraform, it takes `highest` precendece
+`terraform plan -var 'instance_type="t2-large"'`
+
+
+## Local variables
+https://developer.hashicorp.com/terraform/language/values/locals
+// Definition from official Terraform 
+-  A `local` value assigns a name to an expression, 
+- the name can be used multiple times within a module instead of repeating the expression.
+    - `Input` variables are like `function arguments`.
+    - `Output` values are like `function return values`.
+### Declare Local variables
+```
+locals {
+  service_name = "forum"
+  owner        = "Community Team"
+}
+```
+### Local variables assignment 
+```
+locals {
+  # Common tags to be assigned to all resources
+  common_tags = {
+    Service = local.service_name
+    Owner   = local.owner
+  }
+}
+```
+
+### Use of Local variables in the terraform resource
+```
+resource "aws_instance" "example" {
+  # ...
+
+  tags = local.common_tags
+}
+```
+
+**Note** - 
+- The local variable are serving the same purpose as `variables.tf` 
+- It is differentiated by declaring it inside the `config` file
+- the variable defined in `variables.tf` file are considered as global variable
+- But, some situations, we need to use `local` variables as well
+
+<img width="626" alt="tf-var-09" src="https://github.com/user-attachments/assets/3afd3df4-3b68-4b7b-8830-614083a287a7">
+
+
+

@@ -41,18 +41,39 @@ resource "aws_subnet" "new-sub" {
     }
 }
 
-# Create Ec2 instances
-resource "aws_instance" "name" {
-    count = length(var.ec2)
-    ami = var.ec2[count.index].ami
-    instance_type = var.ec2[count.index].instance_type
+# Create Ec2 instances with count meta argument
+# resource "aws_instance" "name" {
+#     count = length(var.ec2)
+#     ami = var.ec2[count.index].ami
+#     instance_type = var.ec2[count.index].instance_type
 
-    subnet_id = element(aws_subnet.new-sub[*].id, count.index % length(aws_subnet.new-sub))
-    tags = {
-    Name = "${local.project}-${count.index+1}"
-  }
-}
+#     subnet_id = element(aws_subnet.new-sub[*].id, count.index % length(aws_subnet.new-sub))
+#     tags = {
+#     Name = "${local.project}-${count.index+1}"
+#   }
+# }
 
 # output "subnet" {
 #     value = aws_subnet.new-sub[0].id
 # }
+
+## for-each meta arguments
+## Used in map & set of strings
+## Map of objects
+
+## Creating ec2 using for-each meta argument
+resource "aws_instance" "web-server" {
+  # get the for-each called to create resource 
+  for_each = var.ec2-type
+  // Here we will get each.key & each.value from the above for-each
+  ## each.key will return "ubuntu" & "amazon_linux"
+  ## each.value will return ami & instance type both with in another object {}
+  ami = each.value.ami
+  instance_type = each.value.instance_type
+
+  # subnet_id = element(aws_subnet.new-sub[*].id, index(keys(var.ec2-type), each.key) % length(aws_subnet.new-sub))
+  subnet_id = element(aws_subnet.new-sub[*].id, index(keys(var.ec2-type), each.key) % length(aws_subnet.new-sub))
+  tags = {
+    Name = "${local.project}-instance-${each.key}"
+  }
+}

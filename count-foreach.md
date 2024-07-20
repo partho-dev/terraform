@@ -1,13 +1,15 @@
 ## To create multiple resources
-- count & foreach are used
+- `count` & `foreach` are used
+- both are called `Meta Arguments` of Terraform
 
 ## Task -1 : Create two subnets using count
 - subnet-1 (10.0.0.0/24)
 - subnet-2 (10.0.1.0/24)
 
 ## Remember
-- count has these property 
-- count.index
+- count has these properties
+- count &
+- count.index [starts from 0]
 
 ### Creating two subnets manually
 1. Create VPC
@@ -129,6 +131,124 @@ resource "aws_instance" "name" {
     subnet_id = element(aws_subnet.new-sub[*].id, count.index % length(aws_subnet.new-sub))
     tags = {
     Name = "${local.project}-${count.index+1}"
+  }
+}
+```
+
+## Terraform for_each (foreach) meta argument 
+### Which data types are used for for_each
+- The for_each meta-argument accepts a `map` or a `set of strings`
+- **map**
+- `map` is denoted as `key = value`
+```
+resource "azurerm_resource_group" "rg" {
+  for_each = tomap({
+    a_group       = "eastus"
+    another_group = "westus2"
+  })
+  name     = each.key
+  location = each.value
+}
+```
+- Lets understand what is map and what is key = value
+
+```
+variable "ec2-instance" {
+  type = map(object({
+    ami           = string
+    instance_type = string
+  }))
+  default = {
+    "web-server" = { # Key
+      ami           = "ami-12345678"  # Value (object with attributes)
+      instance_type = "t2.micro"
+    },
+    "db-server" = {  # Key
+      ami           = "ami-87654321"  # Value (object with attributes)
+      instance_type = "t3.medium"
+    }
+  }
+}
+```
+- Here , map is `map(object({ ... }))`
+- Key: "web-server" and "db-server" in the default value are keys
+- Value: The objects { ami = "ami-12345678", instance_type = "t2.micro" } and { ami = "ami-87654321", instance_type = "t3.medium" } are the values associated with each key.
+- **Note**  : The map is key = value where value is anpther set of {key = value}
+- map of object :  lets have an object {}
+- Now object is key = value
+- {key = value}
+- here value is another set of object 
+- `{key = {key=value}}`
+
+- **Set of strings:**
+```
+resource "aws_iam_user" "the-accounts" {
+  for_each = toset(["Todd", "James", "Alice", "Dottie"])
+  name     = each.key
+}
+```
+
+- for-each iterates over the map of objects and it iterates with default variable `each`
+- if we want to know `key` - each.key
+- if we want to know `value` - each.value [remember value is another object which has its own key = value format of data]
+## How to work with for-each meta argument 
+
+1. create the map of objects in variables.tf file with types
+2. Define the map with proper data on terrafoem.tfvars file
+3. create resource by calling the var on the main.tf file
+
+### Create an Ec2 instance using for-each mata argument
+1. create the map of objects in variables.tf file with types
+```
+variable "ec2-type" {
+  type = map(object({
+    ami = string
+    instance_type = string 
+  }))
+}
+```
+
+2. Define the map with proper data on terrafoem.tfvars file
+```
+ec2-type = {
+  // key = {key=value}
+  "ubuntu" = {
+    ami = "ami-0ec0e125bb6c6e8ec" 
+  instance_type = "t2.small"
+  }
+  "amazon_linux" = {
+    ami = "ami-0ad21ae1d0696ad58" 
+  instance_type = "t2.small"
+  }
+}
+```
+
+3. create resource by calling the var on the main.tf file
+- Few important items to know
+-   `for_each = var.ec2-type`
+- Here we will get `each.key` & `each.value` from the above for-each
+- each.key will return "ubuntu" & "amazon_linux"
+- each.value will return ami & instance type both with in another object {}
+- To know the index position of each itarator, for count we used count.index, but for for-each to know the index position of each key, 
+  - We need to use the inbuilt function `keys()` to know all the keys of map which we can do using each.key as well
+  - to get the list of all keys use the inbuilt function keys(var.ec2-type)
+  - but to know the postion of abobe all keys, we have another function called index() which wraps the keys() function
+  - Know the index positions -  `index(keys(var.ec2-type))` 
+```
+## Creating ec2 using for-each meta argument
+resource "aws_instance" "web-server" {
+  # get the for-each called to create resource 
+  for_each = var.ec2-type
+  // Here we will get each.key & each.value from the above for-each
+  ## each.key will return "ubuntu" & "amazon_linux"
+  ## each.value will return ami & instance type both with in another object {}
+  ami = each.value.ami
+  instance_type = each.value.instance_type
+
+  # subnet_id = element(aws_subnet.new-sub[*].id, index(keys(var.ec2-type), each.key) % length(aws_subnet.new-sub))
+  subnet_id = element(aws_subnet.new-sub[*].id, index(keys(var.ec2-type), each.key) % length(aws_subnet.new-sub))
+  tags = {
+    Name = "${local.project}-instance-${each.key}"
   }
 }
 ```

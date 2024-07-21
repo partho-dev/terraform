@@ -81,8 +81,8 @@ private_key_path = "name_of_key.pem" // ensure the pem file is on the same path
 
 Its best to create a `.env` file and `export` these credentials to be used - https://docs.aws.amazon.com/cli/v1/userguide/cli-configure-envvars.html
 ```
-export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
-export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+export AWS_ACCESS_KEY_ID=AKIAIOSFEXAMPLE-fake
+export AWS_SECRET_ACCESS_KEY=wJalrXUtn/bPxRfiCYEXAMPLEKEY-fake
 export AWS_DEFAULT_REGION=us-west-2
 ```
 - But, ensure the aws is configured on the laptop, to verify that

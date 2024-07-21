@@ -4,7 +4,8 @@
 - both count and for-each are used for same purpose of creating dynamic resources
 - Differences
   - `count` works with `number` data type 
-  - `for-each` works with `collections` of data through `map`, `list`, `set`
+  - `for-each` works with `collections` of data which gives unique value through `map`, `set` 
+  - **list** **cant** be used in `for-each` loop
 
 ## Task -1 : Create two subnets using count
 - subnet-1 (10.0.0.0/24)

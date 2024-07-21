@@ -154,3 +154,68 @@ resource "aws_instance" "name" {
   }
 }
 ```
+
+## What are the most common ways we get data into our Terraform 
+1. `input variables`
+```
+variable "instance_type" {
+  description = "Type of EC2 instance"
+  type        = string
+  default     = "t2.micro"
+}
+
+```
+
+2. Environment varaibles
+```
+export TF_VAR_instance_type="t2.medium"
+
+```
+3. command line - var
+```
+terraform apply -var="instance_type=t2.large"
+
+```
+4. terraform.tfvars
+- It fills the data based on type that we set on variables.tf file
+5. `Data sources ` - Used to retriev info from external source
+```
+data "aws_availability_zone" "name" {
+    state = "available"
+}
+```
+6. Local values
+```
+locals {
+  instance_type = "t2.micro"
+}
+
+resource "aws_instance" "example" {
+  instance_type = local.instance_type
+}
+
+```
+7. outputs
+```
+output "instance_ip" {
+  value = aws_instance.example.public_ip
+}
+```
+8. External data sources - makes use of data from external program
+```
+data "external" "example" {
+  program = ["python3", "${path.module}/external_script.py"]
+
+  query = {
+    key = "value"
+  }
+}
+
+```
+9. modules
+```
+module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "5.9.0"
+}
+```

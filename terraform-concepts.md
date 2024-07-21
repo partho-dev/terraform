@@ -65,6 +65,7 @@ module "vpc-module" {
 
 module "ec2-module" {
     source = "./Ec2-module"
+    // publicSubnet = module.<module_name>.<output_name>
     publicSubnet = module.vpc-module.publicSubnet
     sg = module.vpc-module.sg
 }
@@ -219,3 +220,109 @@ module "vpc" {
   version = "5.9.0"
 }
 ```
+
+
+## Is there a way we can find some similarities or pattern to remember things
+1. Most of the Terraform constructs have similar pattern
+- construct "construct-name" {key = value}
+2. But, based on the constructs, the key changes
+
+### Lets try to find some similarities among all
+1. `module`
+- module "module_name" {key = value}
+- for module ==> key = source 
+- `module "module_name" {source = "../"}`
+*Remember* - to get some value from module, its module.module_name.output_name
+- publicSubnet = module.<module_name>.<output_name>
+
+2. `output`
+- output "output_name" {key = value}
+- for output == > key = value
+- `output "output_name" {value = ..}`
+
+3. `variables`
+- variable "variable_name" {key = value}
+- for variable == > key = description & type
+- `variable "variable_name" {description = value type = string}`
+
+4. `data source & resource`
+- for data types & resources, the value of key changes based on the resources
+
+5. locals does not follow the same patters
+- It **does not** have the parameter *"local-name"*
+- `local {key = value}`
+
+
+## is map and object same or similar in Terraform
+- Their blocks are similar {} and both holds the data in key = value format
+- Only difference is
+  - map expects all same types of data - map(string) or map(number)
+  - object is also having key = value format, but it can be of different data types
+
+## for loop with list, set and map
+- remember the relation of `for` with `in` without any condition
+- with condition, 3rd element also adds `for` `in` `if`
+
+## for loop with list (list of strings & list of numbers)
+### List & set of strings
+```
+variable "names" {
+  type    = list(string)
+  default = ["John", "Steve", "Jobs"]
+}
+```
+- for with list of strings
+- `for` & `in`
+- `upper_case = [for name in var.names: upper(name)]`
+
+### list of numbers
+```
+variable "numbers" {
+  type    = list(number)
+  default = [1, 2, 3, 4]
+}
+```
+- for list of numbers
+- `for` & `in`
+- `double = [for num in var.numbers: num*2]`
+
+### List of numbers with condition to return even number
+- `for` `in` `if`
+- `even_numbers = [for num in var.numbers: num if num % 2 = 0]`
+
+
+## for loop with map
+- `key`, `value` 
+### map is an object with similar data types
+- here we are checking with map with string data types
+
+```
+variable "servers" {
+  type = map(string)
+  default = {
+    server1 = "10.0.0.1"
+    server2 = "10.0.0.2"
+    server3 = "10.0.0.3"
+  }
+}
+```
+- Here, since its map, so the for loop will be inside {} for list its inside []
+- `server_details = {for key, value in var.servers : key => "serverIP-${value}" }`
+- This would be the output of the above for loop
+```
+server_descriptions = {
+      + server1 = "serverIP-10.0.0.1"
+      + server2 = "serverIP-10.0.0.2"
+      + server3 = "serverIP-10.0.0.3"
+    }
+```
+
+## for loop with set
+- Its same as list `for` `in` 
+*Note*
+- both set(string) & list(string) has same structure as `["value1", "value2"]` within `[]`
+- for value `["d", "a", "b", "c", "a"]`
+- only difference 
+  - set ( ` does not accept any duplicate value and should be in order`) - `["a", "b", "c", "d"]`
+  - list ( ` accepts duplicate value in any order`) - `["d", "a", "b", "c", "a"]`
+

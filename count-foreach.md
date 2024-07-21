@@ -1,5 +1,5 @@
 ## To create multiple resources
-- `count` & `foreach` are used
+- `count` & `for-each` foreach are used
 - both are called `Meta Arguments` of Terraform
 - both count and for-each are used for same purpose of creating dynamic resources
 - Differences

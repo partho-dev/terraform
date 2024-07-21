@@ -1,6 +1,10 @@
 ## To create multiple resources
 - `count` & `foreach` are used
 - both are called `Meta Arguments` of Terraform
+- both count and for-each are used for same purpose of creating dynamic resources
+- Differences
+  - `count` works with `number` data type 
+  - `for-each` works with `collections` of data through `map`, `list`, `set`
 
 ## Task -1 : Create two subnets using count
 - subnet-1 (10.0.0.0/24)
@@ -80,6 +84,15 @@ resource "aws_instance" "name" {
 }
 ```
 - `element(aws_subnet.new-sub[*].id, count.index % 2)`
+- here `[*]` is the placeholder for index
+- & the index is defined after `,` 
+- manually typed index 
+  - `[*], 0` which means `[0]`
+  - `[*], 1` which means `[1]`
+- but rather definfing the indexsed manually, we are using `count.index`
+- `%2` is used to find odd or even index only 
+- `%2 == 0` -- Only `even` number of index like `0, 2, 4 `
+- `%2 != 0` -- only `odd` number of index like `1, 3, 5`
 - `element(first_part, second part)`
 - first part = It finds the single element(`id`) from all (`*`) list
 - second part, which index (0 or 1) 0bjects needs to be shown

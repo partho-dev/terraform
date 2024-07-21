@@ -292,7 +292,7 @@ variable "numbers" {
 
 
 ## for loop with map
-- `key`, `value` 
+- `key`, `value` `=>`
 ### map is an object with similar data types
 - here we are checking with map with string data types
 
@@ -325,4 +325,10 @@ server_descriptions = {
 - only difference 
   - set ( ` does not accept any duplicate value and should be in order`) - `["a", "b", "c", "d"]`
   - list ( ` accepts duplicate value in any order`) - `["d", "a", "b", "c", "a"]`
+
+## for-each meta argument and its looping
+- I have explained that very thoroughly on this - https://github.com/partho-dev/terraform/blob/main/count-foreach.md
+
+## element function in terraform
+- I have explined that very thoroughly on this - https://github.com/partho-dev/terraform/blob/main/count-foreach.md
 

@@ -1,16 +1,22 @@
 terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
+  backend "s3" {
+    bucket         = "partho-state-bkt"
+    key            = "partho_backup.tfstate"
+    region         = "ap-south-1"
+    dynamodb_table = "db-locks-table"
   }
+  # required_providers {
+  #   aws = {
+  #     source  = "hashicorp/aws"
+  #     version = "~> 5.0"
+  #   }
+  # }
 }
 
-# Configure the AWS Provider
 provider "aws" {
   region = "ap-south-1"
 }
+
 
 resource "aws_instance" "webserver" {
   ami           = "ami-0ad21ae1d0696ad58"

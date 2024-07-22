@@ -62,6 +62,10 @@ resource "aws_subnet" "new-sub" {
 ## Map of objects
 
 ## Creating ec2 using for-each meta argument
+locals {
+  key_index = keys(var.ec2-type)
+
+}
 resource "aws_instance" "web-server" {
   # get the for-each called to create resource 
   for_each = var.ec2-type
@@ -72,7 +76,9 @@ resource "aws_instance" "web-server" {
   instance_type = each.value.instance_type
 
   # subnet_id = element(aws_subnet.new-sub[*].id, index(keys(var.ec2-type), each.key) % length(aws_subnet.new-sub))
-  subnet_id = element(aws_subnet.new-sub[*].id, index(keys(var.ec2-type), each.key) % length(aws_subnet.new-sub))
+  # subnet_id = element(aws_subnet.new-sub[*].id, index(keys(var.ec2-type), each.key) % length(aws_subnet.new-sub))
+  subnet_id = element(aws_subnet.new-sub[*].id, index(local.key_index, each.key) % length(aws_subnet.new-sub))
+
   tags = {
     Name = "${local.project}-instance-${each.key}"
   }

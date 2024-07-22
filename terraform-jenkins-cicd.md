@@ -9,7 +9,9 @@
 - Prerequisite
     1. Create an IAM user with policy to access aws resources - start with `AdministratorAccess`
         - Make a note of the access-key and secret-access-key
+
     <img width="1334" alt="policy" src="https://github.com/user-attachments/assets/f02a4cf4-c22a-497a-aa31-2df7477d4631">
+
     2. create an IAM role for Ec2 to have full access to control the AWS infra
     <img width="417" alt="role" src="https://github.com/user-attachments/assets/d0b788eb-dfcf-4632-ac64-0a1320375280">
 

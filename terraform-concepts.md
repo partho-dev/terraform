@@ -332,3 +332,15 @@ server_descriptions = {
 ## element function in terraform
 - I have explined that very thoroughly on this - https://github.com/partho-dev/terraform/blob/main/count-foreach.md
 
+## How to pass user data on Ec2 through Terraform
+- create a file, `data.sh` and put all the commmands here
+- on the Ec2 resource, use this key
+- `user_data = file("data.sh")`
+
+## To deploy EKS cluster on AWS
+- These tags are needed to pass the traffic to respective cluster
+- tags = {kubernetes.io/cluster/my-cluster = "shared"}
+- For `public` subnet
+  - public_subnet_tags = {kubernetes.io/role/elb = 1 kubernetes.io/cluster/my-cluster = "shared"}
+- For `private` subnet
+  - private_subnet_tags = {kubernetes.io/role/internal-elb = 1 kubernetes.io/cluster/my-cluster = "shared"}

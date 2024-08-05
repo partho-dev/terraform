@@ -185,9 +185,9 @@ variable "ec2-instance" {
 }
 ```
 - Here , map is `map(object({ ... }))`
-- Key: "web-server" and "db-server" in the default value are keys
-- Value: The objects { ami = "ami-12345678", instance_type = "t2.micro" } and { ami = "ami-87654321", instance_type = "t3.medium" } are the values associated with each key.
-- **Note**  : The map is key = value where value is anpther set of {key = value}
+- `Key`: `"web-server"` and `"db-server"` in the default value are keys
+- `Value`: The objects `{ ami = "ami-12345678", instance_type = "t2.micro" }` and `{ ami = "ami-87654321", instance_type = "t3.medium" }` are the values associated with each key.
+- **Note**  : The `map` is `key = value` where value is another set of {key = value}
 - map of object :  lets have an object {}
 - Now object is key = value
 - {key = value}
@@ -201,7 +201,7 @@ resource "aws_iam_user" "the-accounts" {
   name     = each.key
 }
 ```
-
+- Here, we are using `toset()` function to wrap the `List[]` and ensuring the List[] has `unique` items. 
 - for-each iterates over the map of objects and it iterates with default variable `each`
 - if we want to know `key` - each.key
 - if we want to know `value` - each.value [remember value is another object which has its own key = value format of data]

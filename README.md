@@ -1,6 +1,10 @@
 ## terraform
 
 - Terraform works in HCL language [ Hassicorp Configuration Language ]
+- Terraform works with this flow
+    - It uses a declaritive code which interacts with API(Provider)
+    - That API(Provider) translates the code to a format which the target cloud understands
+    - And the infrastructure gets created based on the API
 - The most 4 important commands that will always be used in Terraform are to initialize the terraform 
     - terraform init
     - terraform plan

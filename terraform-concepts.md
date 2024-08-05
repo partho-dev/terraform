@@ -99,7 +99,8 @@ module "ec2-module" {
   - To delete the workspace - `terraform workspace delete qa`
 - Remember - when we create workspace - it creates a new directory on the name of `terraform.tfstate.d` which maintains different environment tfstate files to isolate each resources 
 - But, this folder would not be deleted if we delete the workspace. so need to delete that manually
-
+### When not to use terraform workspace
+- If the credentials are different for target environment [ if there are 2 different aws accounts, workspace would not be helpful]
 
 
 
@@ -247,7 +248,15 @@ module "vpc" {
   version = "5.9.0"
 }
 ```
-
+## What are the ways, we can check the Log for Terraform
+- We have to export the Log and set the Log to trace any error or issues
+- The Terraform Log (`TF_LOG`) can check these in logs `TRACE, DEBUG, INFO, WARN, ERROR`
+- But, we would need to set that what we want to see
+- For Shell - `export TF_LOG="DEBUG"`
+- For Windows, we can use `powershell` - `$env:TF_LOG="DEBUG"`
+- We can set the logs in a file
+- Shell - `export TF_LOG_PATH="path_to/terraform.log"`
+- Powershell - `$env:TF_LOG_PATH="path_to\terraform.log"`
 
 ## Is there a way we can find some similarities or pattern to remember things
 1. Most of the Terraform constructs have similar pattern

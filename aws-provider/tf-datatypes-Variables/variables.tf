@@ -15,4 +15,3 @@ variable "define-volume" {
      volume_type = "gp2"
    }
 }
-

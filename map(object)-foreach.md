@@ -12,15 +12,15 @@
 **Example** 🥇 
 
 `let listObj = ["partho", {public_subnet = {cidr = "10.0.1.0/24", az="ap-south-1a"}}]`
-- 1. here, listObj[0] = "partho"
-- 2. & listObj[1] = {public_subnet = {cidr = "10.0.1.0/24", az="ap-south-1a"}}
-- 3. & listObj[1].public_subnet = {cidr = "10.0.1.0/24", az="ap-south-1a"}
-- 4. & listObj[1].public_subnet.cidr = "10.0.1.0/24"
-- 5. & listObj[1].public_subnet.az = "ap-south-1a"
+- here, `listObj[0]` = `"partho"`
+- & `listObj[1]` = `{public_subnet = {cidr = "10.0.1.0/24", az="ap-south-1a"}}`
+- & `listObj[1].public_subnet` = `{cidr = "10.0.1.0/24", az="ap-south-1a"}`
+- & `listObj[1].public_subnet.cidr` = `"10.0.1.0/24"`
+- & `listObj[1].public_subnet.az` = `"ap-south-1a"`
 - Explanation
   - to find the value of element within a `list` ["a"] use index position inside `[0] `
   - to find the value of element within an `object` `{}`, use `dot .` and the object name, which is `key`
-  
+
 
 ### Normal way of creation of subnets using Terraform Resource
 

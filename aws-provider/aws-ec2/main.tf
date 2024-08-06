@@ -24,6 +24,12 @@ resource "aws_instance" "webserver" {
   tags = {
     Name = "tf-example"
   }
+
+  lifecycle {
+    # create_before_destroy = true
+    # prevent_destroy = true
+    ignore_changes = [ tags["Name"] ]
+  }
 }
 
 output "instance_public_ip" {

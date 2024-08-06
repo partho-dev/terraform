@@ -1,6 +1,27 @@
 ## How can we create multiple resources of same kind
 - Create two subnets for vpc_id = aws_vpc.main.id
 
+### Important things to remember
+- Both count & for-each actually loops through the object and place them inside a list []
+- and inside list, the elements are considered with their index position
+- Lets take this as example
+
+- **Note** 👍 
+- For simplicity, I am using `let` to define variable which is not allowed in Terraform, 
+- For terraform, we have to use `locals {}` for that
+**Example** 🥇 
+
+`let listObj = ["partho", {public_subnet = {cidr = "10.0.1.0/24", az="ap-south-1a"}}]`
+- 1. here, listObj[0] = "partho"
+- 2. & listObj[1] = {public_subnet = {cidr = "10.0.1.0/24", az="ap-south-1a"}}
+- 3. & listObj[1].public_subnet = {cidr = "10.0.1.0/24", az="ap-south-1a"}
+- 4. & listObj[1].public_subnet.cidr = "10.0.1.0/24"
+- 5. & listObj[1].public_subnet.az = "ap-south-1a"
+- Explanation
+  - to find the value of element within a `list` ["a"] use index position inside `[0] `
+  - to find the value of element within an `object` `{}`, use `dot .` and the object name, which is `key`
+  
+
 ### Normal way of creation of subnets using Terraform Resource
 
 **The problem in this approach**

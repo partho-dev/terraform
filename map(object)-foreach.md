@@ -189,6 +189,25 @@ variable "sub_cidrs" {
         }
     }
 ```
+- If you carefully structure this, it would look something like this
+```
+{ 
+private = { cidr = ["10.0.2.0/24", "10.0.4.0/24" ] is_public = false }
+public  = {cidr = ["10.0.1.0/24", "10.0.3.0/24" ] is_public = true}
+}
+```
+
+- That means - there is a `outer block of map {}` which have `2` `key = value pairs`
+- `1st pair` has key = `private` & value = `{ cidr = ["10.0.2.0/24", "10.0.4.0/24" ] is_public = false }`
+- `2nd pair` has key = `public` & value = `{cidr = ["10.0.1.0/24", "10.0.3.0/24" ] is_public = true}`
+
+- Further break down 
+  - each pair`s value is another block of objects with its own properties
+  - since value is an object, so to access the properties of that `object`, we have to use `object.property_name`
+    - to know about `cidr` = `value.cidr`
+    - but, again the cidr is a list, so to access the list element, we would need the index positions - `value.cidr[0]`
+    
+- Now, lets see how to deal with this data 
 - We would need to convert that to a list of objects from map of objects
 - Its easy to iterate over lists
 - So, create a `locals` and run the loop over the map of objects to get a new output and save that to a different name

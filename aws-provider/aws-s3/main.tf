@@ -17,6 +17,10 @@ provider "aws" {
 }
 
 
+resource "aws_instance" "name" {
+  instance_type = "t2.microoo"
+  ami = "ami-0ad21ae1d0696ad58"
+}
 resource "random_id" "rand_id" {
   byte_length = 8
 }

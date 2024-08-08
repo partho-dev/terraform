@@ -1,16 +1,16 @@
 terraform {
-  backend "s3" {
-    bucket         = "partho-state-bkt"
-    key            = "partho_backup.tfstate"
-    region         = "ap-south-1"
-    dynamodb_table = "db-locks-table"
-  }
-  # required_providers {
-  #   aws = {
-  #     source  = "hashicorp/aws"
-  #     version = "~> 5.0"
-  #   }
+  # backend "s3" {
+  #   bucket         = "partho-state-bkt"
+  #   key            = "partho_backup.tfstate"
+  #   region         = "ap-south-1"
+  #   dynamodb_table = "db-locks-table"
   # }
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
 }
 
 provider "aws" {
@@ -28,7 +28,18 @@ resource "aws_instance" "webserver" {
   lifecycle {
     # create_before_destroy = true
     # prevent_destroy = true
-    ignore_changes = [ tags["Name"] ]
+    # ignore_changes = [ tags["Name"] ]
+
+    # precondition {
+    #   condition     = length(aws_instance.webserver.tags["Name"]) > 0
+    #   error_message = "The instance name must not be blank"
+    # }
+
+    # postcondition {
+    #   condition     = self.tags["Name"] != ""
+    #   error_message = "The instance name should not be blank"
+    # }
+
   }
 }
 

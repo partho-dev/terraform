@@ -114,3 +114,164 @@ variable "subnet_config" {
 }
 ```
 
+## Resource specific validations
+- This is used during the resource lifecycle
+- Terraform provide a way to enforce policies and checks before and after the application of infrastructure changes. 
+- These validations can ensure that the infrastructure adheres to specific rules and requirements
+
+### Two types of resource specific validations are there
+- These two conditions can be used inside the lifecycle block of a resource
+
+1. `pre-validation`
+- It validates the conditions before a resource is created or modified.
+
+- Examples:
+  - ✅ Ensuring a required tag is present.
+  - ✅ Validating naming conventions.
+  - ✅ Checking that certain dependencies are met.
+
+2. `post-validation`
+- It validates condition after a resource has been created or modified.
+- Examples:
+  - ✅ Verifying that an instance is in a running state.
+  - ✅ Ensuring that certain outputs meet predefined criteria.
+
+```
+resource "aws_instance" "webserver" {
+  ami           = "ami-0ad21ae1d0696ad58"
+  instance_type = "t2.micro"
+  tags = {
+    Name = "tf-example"
+  }
+
+  lifecycle {
+    # create_before_destroy = true
+    # prevent_destroy = true
+    # ignore_changes = [ tags["Name"] ]
+
+    precondition {
+      condition     = length(aws_instance.webserver.tags["Name"]) > 0
+      error_message = "The instance name must not be blank"
+    }
+
+    postcondition {
+      condition     = self.tags["Name"] != ""
+      error_message = "The instance name should not be blank"
+    }
+
+  }
+}
+
+```
+
+### Enforcing policy as a code
+- We can use Policy-as-Code Tools (e.g., Sentinel, OPA)
+- Sentinel & OPA are very much used with Terraform cloud & terraform enterprise. 
+- But, they can be setup locally as well 
+
+1. Policy using `Sentinel`
+
+- Sentinel allows to define policies that can enforce rules at various stages of the Terraform workflow.
+- Ex: Instance type should be only t2.small, so if anyone writes tf code with other instance type, the policy would block that resource creation
+
+- Example Sentinel Policy: ( AI Generated code )
+```
+import "tfplan/v2" as tfplan
+
+main = rule {
+  all tfplan.resources.aws_instance as _, instances {
+    all instances as _, instance {
+      instance.applied.tags contains "Environment"
+    }
+  }
+}
+```
+
+2. Open Policy Agent (OPA)
+- OPA can be integrated with Terraform to enforce policies
+- Example of OPA policy
+
+```
+package terraform
+
+deny[msg] {
+  input.resource_type == "aws_instance"
+  not input.config.tags["Environment"]
+  msg = "Environment tag is required on all instances"
+}
+```
+
+## Terraform Linter
+- `ftlint`
+- https://github.com/terraform-linters/tflint
+
+- `Features`
+  - TFLint is a framework and each feature is provided by plugins, the key features are as follows:
+  - Find possible errors (like invalid instance types) for Major Cloud providers (AWS/Azure/GCP).
+  - Warn about deprecated syntax, unused declarations.
+  - Enforce best practices, naming conventions.
+
+### Why do we need tflint
+- When we create a resource with some incorrect configuration
+- terraform `validate` or terraform `plan` does not have the capability to catch that
+- Example 
+```
+resource "aws_instance" "name" {
+  instance_type = "t2.microoo"
+  ami = "ami-0ad21ae1d0696ad58"
+}
+```
+
+- In the above, we know that the instance type is incorrect `t2.microoo`
+- if we do `terraform validate` or `terraform plan` 
+- This issue can not be observed
+
+- <img width="481" alt="tflint" src="https://github.com/user-attachments/assets/4bde99bc-deb2-490c-8e2f-56326e7e1b72">
+
+- But, `tflint` can easily detect that
+
+- Lets see that below
+
+### `Installation` of tflint
+
+- Bash script (Linux):
+```
+curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+```
+
+- `Homebrew (macOS):`
+```
+brew install tflint
+```
+
+- Chocolatey (Windows):
+```
+choco install tflint
+```
+### Now, configure the `tflint`
+- create a file on the working directory `.tflint.hcl`
+- for AWS as target cloud - https://github.com/terraform-linters/tflint-ruleset-aws
+- Enable the AWS cloud plugin
+```
+// .tflint.hcl
+
+plugin "aws" {
+    enabled = true
+    version = "0.32.0"
+    source  = "github.com/terraform-linters/tflint-ruleset-aws"
+}
+```
+- The above code will enable tflint for AWS 
+
+- initialise the `tflint`
+```
+tflint --init
+```
+
+- Now to validate any error on the code
+```
+tflint
+```
+
+- <img width="667" alt="tflint-2" src="https://github.com/user-attachments/assets/75993cba-ffa6-4b4b-8021-4bba188f9e66">
+

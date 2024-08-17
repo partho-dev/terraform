@@ -1,17 +1,25 @@
+## What is variables
+- Variables are not specific to only terraform, it is widely used in any programming language.
+- In very common terms, a variable is a placeholder to store any data types. 
+- Example, I have a data, user age, which is a Number, I can store that data in a variable(`age`) which allocates a memory space.
+
+## Why do we need a variable
+- Variables are used to prevent repetation of hard coding value in the code
+
 ## Terraform variables
 
-- A variable is used to prevent repetation of hard coding the properties during resource creation
 - Terraform has two types of variables
 1. Input Variable
 2. Output Variable
 - When we write variable, it deals with different types of data & so, we would need to know more about `Data Types`
 
 ## Terraform variables and their orders of preferences
-
-            - environment var ( export TF_VAR_Key=value)
-        - terraform.tfvars
-    - *.auto.tfvars
+```
+- environment var ( export TF_VAR_Key=value)
+- terraform.tfvars
+- *.auto.tfvars
 - -var & -var-file (Through command line)
+```
 
 ## Data types - Data types in Terraform
 ### Terraform List
@@ -198,6 +206,7 @@ resource "aws_instance" "server" {
 
 variable "instance_type" {
   description = "mention the instance type here"
+  
   default = "t2.micro"
 }
 ```

@@ -141,3 +141,10 @@ resource "aws_instance" "main" {
 #     Name = "main-subnet-group"
 #   }
 # }
+
+
+variable "instance_type" {
+  description = "mention the instance type here"
+  type = string
+  default = "t2.micro"
+}

@@ -263,25 +263,24 @@ locals {
 
 ```
 [
-       {
-           cidr      = "10.0.2.0/24"
-           is_public = false
-        },
-       {
-           cidr      = "10.0.4.0/24"
-           is_public = false
-        },
-       {
-           cidr      = "10.0.1.0/24"
-           is_public = true
-        },
-       {
-           cidr      = "10.0.3.0/24"
-           is_public = true
-        },
-    ]
+  {cidr = "10.0.2.0/24" is_public = false},
+  {cidr = "10.0.4.0/24" is_public = false},
+  { cidr = "10.0.1.0/24" is_public = true },
+  { cidr = "10.0.3.0/24" is_public = true },
+   ]
 ```
 - Now its little easier to create subnets resource using this data
+- But, this is a list of objects
+- To itarate using for_each, we would need set of data in `key=value` pairs
+
+- We have to make the above like this [  key1 = {} key2= {} ]
+
+```
+locals {
+  cidrs = {for elem in local.subnet_configs: "${elem.cidr}" => elem }
+}
+
+```
 
 ```
 resource "aws_subnet" "name" {
@@ -298,14 +297,11 @@ resource "aws_subnet" "name" {
         }
     }
     */
-    for_each = {for elem in local.subnet_configs: "${elem.cidr}" => elem }
-    // here elem is the entire block of object  {cidr= "10.0.2.0/24" is_public = false}
-    // To have a unique key, we would need to do the above to find the key 
-    // 10.0.2.0/24 = {cidr= "10.0.2.0/24" is_public = false}
-    // Now, its easy to 
+
+    for_each = local.cidrs
     vpc_id = aws_vpc.main.id
     cidr_block = each.value.cidr
-     availability_zone = element(var.av_zones[*], index(local.subnet_configs, each.value) % length(var.av_zones))
+    availability_zone = element(var.av_zones[*], index(local.subnet_configs, each.value) % length(var.av_zones))
     map_public_ip_on_launch = each.value.is_public == true
 
     tags = {
